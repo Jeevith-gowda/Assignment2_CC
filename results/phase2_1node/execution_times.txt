@@ -1,0 +1,5 @@
+Phase 2: 1 Data Node Results
+============================
+Dataset1 (100 docs, ~5000 words, 4,950 pairs): 27.492s
+Dataset2 (200 docs, ~15000 words, 19,900 pairs): 20.671s  
+Dataset3 (300 docs, ~25000 words, 44,850 pairs): 21.263s

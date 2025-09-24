@@ -1,4 +1,4 @@
 Phase 1: 3 Data Nodes Results
 Dataset1: 23.057s
-Dataset2: 25.0s
-Dataset3: 26.0s
+Dataset2: 20.1s
+Dataset3: 20.41s

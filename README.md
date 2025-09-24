@@ -129,7 +129,18 @@ src/main/java/com/example/
 - Configures MapReduce job parameters
 - Sets single reducer for complete pairwise computation
 - Manages input/output paths
-
+- 
+## Challenges and Solutions
+### Technical Challenges
+- Data Format Compatibility: Converting structured CSV data into a format suitable for vector search presented initial challenges. The tabular nature of happiness metrics didn't naturally fit the document-based RAG paradigm. This was resolved by creating structured text representations for each country's data, ensuring all numerical and categorical information remained accessible while being semantically searchable.
+- Memory Management: The ConversationalRetrievalChain with conversation history caused memory buildup during extended sessions. Long conversations would slow response times and potentially hit context limits. The solution involved implementing conversation buffer management and adding dataset loading status checks to prevent queries before data initialization.
+- Vector Store Optimization: Initial attempts with larger chunk sizes (800+ characters) resulted in noisy retrievals where country-specific queries would return irrelevant data from multiple countries. This was addressed by reducing chunk sizes to 300 characters with minimal overlap, ensuring each chunk contained focused, country-specific information.
+- API Integration: Working with multiple external services (Groq for LLM, HuggingFace for embeddings) introduced potential failure points. Rate limiting and authentication issues were mitigated through proper error handling, API key management, and fallback mechanisms for failed requests.
+### Implementation Solutions
+- File Upload Flexibility: Replacing hard-coded Google Drive paths with dynamic file upload capabilities improved usability and eliminated dependency on specific cloud storage configurations. The Gradio file upload widget with CSV validation ensures users can test the system with their own datasets.
+- Systematic Experimentation: Rather than manual testing, the experimentation framework was designed to automatically test multiple configurations (chunking strategies, prompting techniques, LLM parameters) and generate quantitative comparisons. This provided concrete data for the reflection analysis while ensuring reproducible results.
+- User Experience Design: The multi-step interface (Upload → Load → Chat) with clear status feedback addressed the common issue of users attempting queries before data loading completed. Visual indicators and error messages guide users through the proper workflow.
+- Prompt Engineering: Initial generic prompts produced inconsistent responses for data analysis tasks. The structured prompt template with specific instructions for analytical reasoning and response formatting significantly improved answer quality and consistency across different query types.
 ## Running the Application
 
 ### Prerequisites

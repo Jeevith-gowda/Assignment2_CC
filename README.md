@@ -131,16 +131,22 @@ src/main/java/com/example/
 - Manages input/output paths
 - 
 ## Challenges and Solutions
-### Technical Challenges
-- Data Format Compatibility: Converting structured CSV data into a format suitable for vector search presented initial challenges. The tabular nature of happiness metrics didn't naturally fit the document-based RAG paradigm. This was resolved by creating structured text representations for each country's data, ensuring all numerical and categorical information remained accessible while being semantically searchable.
-- Memory Management: The ConversationalRetrievalChain with conversation history caused memory buildup during extended sessions. Long conversations would slow response times and potentially hit context limits. The solution involved implementing conversation buffer management and adding dataset loading status checks to prevent queries before data initialization.
-- Vector Store Optimization: Initial attempts with larger chunk sizes (800+ characters) resulted in noisy retrievals where country-specific queries would return irrelevant data from multiple countries. This was addressed by reducing chunk sizes to 300 characters with minimal overlap, ensuring each chunk contained focused, country-specific information.
-- API Integration: Working with multiple external services (Groq for LLM, HuggingFace for embeddings) introduced potential failure points. Rate limiting and authentication issues were mitigated through proper error handling, API key management, and fallback mechanisms for failed requests.
-### Implementation Solutions
-- File Upload Flexibility: Replacing hard-coded Google Drive paths with dynamic file upload capabilities improved usability and eliminated dependency on specific cloud storage configurations. The Gradio file upload widget with CSV validation ensures users can test the system with their own datasets.
-- Systematic Experimentation: Rather than manual testing, the experimentation framework was designed to automatically test multiple configurations (chunking strategies, prompting techniques, LLM parameters) and generate quantitative comparisons. This provided concrete data for the reflection analysis while ensuring reproducible results.
-- User Experience Design: The multi-step interface (Upload → Load → Chat) with clear status feedback addressed the common issue of users attempting queries before data loading completed. Visual indicators and error messages guide users through the proper workflow.
-- Prompt Engineering: Initial generic prompts produced inconsistent responses for data analysis tasks. The structured prompt template with specific instructions for analytical reasoning and response formatting significantly improved answer quality and consistency across different query types.
+
+### Technical Implementation Challenges
+
+**Maven Directory Structure Issue**: Initially encountered `ClassNotFoundException` due to incorrect Maven project structure where Java files were placed in `src/main/com/` instead of the standard `src/main/java/com/` directory. **Solution**: Restructured the project to follow Maven conventions and rebuilt the JAR file, ensuring proper class compilation and packaging.
+
+**Container State Management**: When switching between 3-node and 1-node cluster configurations, the JAR file and data needed to be re-copied to containers after each `docker-compose` restart. **Solution**: Implemented systematic container management workflow with backup configurations (`docker-compose-3nodes.yml`) and automated data/JAR copying scripts.
+
+**Dataset Size Optimization**: Initial datasets were too small (~30-55 documents) to demonstrate meaningful performance differences between distributed and single-node processing, with framework overhead dominating execution time. **Solution**: Developed programmatic dataset generation script creating realistic datasets with 100-300 documents and 5K-25K words, resulting in 4,950-44,850 document pairs for more substantial computational workload.
+
+**Text Preprocessing Requirements**: Ensuring consistent text normalization (lowercase conversion, punctuation removal) without manual intervention as specified in assignment requirements. **Solution**: Implemented regex-based preprocessing (`[^a-zA-Z0-9\\s]`) within the Mapper class to automatically handle case conversion and punctuation removal, ensuring 'Word' and 'word.' are treated as identical tokens.
+
+**Single Reducer Bottleneck**: The requirement to compute all pairwise similarities created a natural bottleneck where all document data must flow through one reducer, limiting distributed processing benefits. **Solution**: Acknowledged this as an architectural trade-off for correctness, documented the limitation, and suggested multi-stage MapReduce as a future enhancement for true scalability.
+
+**Performance Measurement Complexity**: Accurately measuring and comparing execution times across different cluster configurations while accounting for framework overhead and system variability. **Solution**: Implemented systematic timing methodology using `time` command, multiple test runs, and comprehensive documentation of both computational complexity (document pairs) and actual execution results.
+
+
 ## Running the Application
 
 ### Prerequisites
